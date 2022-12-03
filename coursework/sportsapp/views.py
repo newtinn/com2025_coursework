@@ -1,3 +1,8 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 
-# Create your views here.
+def userHome(request):
+    if (request.user.is_authenticated):
+        return render(request, "userHome.html", {})
+    else:
+        return HttpResponseRedirect('/')
