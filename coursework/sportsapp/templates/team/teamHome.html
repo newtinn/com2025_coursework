@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-left: 20px;">
+    {% if team != None %}
+        <h1>{{team.name}}</h1>
+        <p>Team Leader: {{leader.username}}</p>
+    {% else %}
+        <h1>Team does not exist</h1>
+    {% endif %}
+</div>
+{% endblock content %}
