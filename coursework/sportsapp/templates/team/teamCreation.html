@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-left: 20px;">
+    <form method="POST">
+        {% csrf_token %}
+        <h2>Create a new Team</h2><br/>
+        {{ form.as_p }}
+        <input type="submit" />
+    </form>
+</div>
+{% endblock content %}

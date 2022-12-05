@@ -1,10 +1,46 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
+
 <div style="margin-left: 20px;">
     {% if team != None %}
         <h1>{{team.name}}</h1>
         <p>Team Leader: {{leader.username}}</p>
+
+        {% if user.is_authenticated and admin == True %}
+            <br/>
+            <input type="submit" value="Add Member" class="btn btn-success" onclick="toggleAddMember()"/>
+            <div id="newMemberForm" style="display: none; margin-top: 30px;">
+                <form method="POST">
+                    {% csrf_token %}
+                    <h4>Add Member</h4>
+                    Username: <input type="text" name="username" /><br/>
+                    Admin: <input type="checkbox" name="admin" /><br/>
+                    <input type="submit" />
+                </form>
+            </div>
+            <br/>
+            <input type="submit" value="Add Member" class="btn btn-success" onclick="toggleAddFixture()"/>
+            <div id="newFixtureForm" style="display: none; margin-top: 30px;">
+                <form method="POST">
+                    {% csrf_token %}
+                    <h4>Create new Fixture</h4>
+                    {{ form.as_p }}
+                    <input type="submit" />
+                </form>
+            </div>
+        {% endif %}
+
+        <div style="margin-top: 30px;">
+            <h4>Members:</h4>
+            {% if members != None %}
+                {% for member in members %}
+                    <li>{{member.userID.username}}</li>
+                {% endfor %}
+            {% endif %}
+        </div>
     {% else %}
         <h1>Team does not exist</h1>
     {% endif %}

@@ -1,41 +1,124 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
-from .forms import TeamCreationForm
+from .forms import TeamCreationForm, FixtureCreationForm
 
-from .models import Team
+from .models import Team, Member, Fixture
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url='/accounts/login/')
 def userHome(request):
     if (request.user.is_authenticated):
-        return render(request, "userHome.html", {})
+        # getting the teams that the user is a part of
+        teams = Member.objects.filter(userID=request.user).all()
+
+        return render(request, "userHome.html", {"teams": teams})
     else:
         return HttpResponseRedirect('/')
 
 def teamPage(request, team):
-    context = { "team": None }
+    context = { "team": None, "members": None, "error": None }
 
-    data = Team.objects.filter(id=team).first()
+    currentTeam = Team.objects.filter(id=team).first()
 
-    if (data):
+    if (currentTeam):
         teamID = team
+        context["team"] = currentTeam
 
-        leader = User.objects.filter(id=data.leader).first()
+        leader = User.objects.filter(id=currentTeam.leader).first()
 
         if (leader):
-            context = { "team": data, "leader": leader }
-        else:
-            context = { "team": data }    
+            context["leader"] = leader
+
+        # listing the members of the team
+        members = Member.objects.filter(teamID=currentTeam).all()
+        if (members):
+            context["members"] = members
 
         
+        # checking if the user is an admin
+        if (request.user.is_authenticated):
+            currentMember = Member.objects.filter(userID=request.user).first()
+            if (currentMember.teamAdmin == True):
+                context['admin'] = True
+            else:
+                context['admin'] = False
+        
+            # add member form
+            if (context['admin'] == True):
+                if (request.method == 'POST'):
+                    newMember = request.POST['username']
+                    if ('admin' in request.POST):
+                        isAdmin = True
+                    else:
+                        isAdmin = False
 
+                    # checking if the user exists
+                    users = User.objects.filter(username=newMember).first()
+                    if (users):
+                        # user exists
+
+                        # checking if member is not already in team
+                        members = Member.objects.filter(userID=users, teamID=currentTeam)
+                        if (members):
+                            print("")
+                        else:
+                            member = Member(userID=users, teamID=currentTeam, teamAdmin=isAdmin)
+                            member.save()
+
+                        return HttpResponseRedirect('/app/team/'+str(currentTeam.id))
+
+                
+        
     return render(request, "team/teamHome.html", context)
 
-'''
+@login_required(login_url='/accounts/login/')
 def teamCreate(request):
     if (request.method == 'POST'):
         form = TeamCreationForm(request.POST)
 
         if (form.is_valid()):
-            return 
-'''
+            # Adding a new team record
+            data = form.cleaned_data
+            team = Team(name=data['name'], leader=request.user.id)
+            team.save()
+            teamID = str(Team.objects.latest('id'))
+
+            member = Member(userID=request.user.id, teamID=teamID, teamAdmin=True)
+
+            return HttpResponseRedirect('team/'+teamID)
+        else:
+            return HttpResponseRedirect('/team/create')
+    else:
+        form = TeamCreationForm()
+        context = {'form': form}
+        return render(request, "team/teamCreation.html", context)
+
+@login_required(login_url='/accounts/login/')
+def fixtureCreate(request, team):
+    # checking if the user is an admin
+    currentMember = Member.objects.filter(userID=request.user).first()
+
+    if (currentMember.teamAdmin == True):
+        if (request.method == 'POST'):
+            currentTeam = Team.objects.filter(id=team).first()
+
+            form = FixtureCreationForm(request.POST)
+
+            if (form.is_valid()):
+                # Adding a new team record
+                data = form.cleaned_data
+                fixture = Fixture(name=data['name'], date=data['date'], description=data['description'], location=data['location'], teamID=currentTeam)
+                fixture.save()
+                teamID = str(Team.objects.latest('id'))
+
+                return HttpResponseRedirect('team/'+teamID)
+            else:
+                return HttpResponseRedirect('/team/newFixture/'+teamID)
+        else:
+            form = FixtureCreationForm()
+            context = {'form': form}
+            return render(request, "fixtures/fixtureCreation.html", context)
+    else:
+        return HttpResponseRedirect('/')
