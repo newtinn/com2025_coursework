@@ -22,16 +22,17 @@
                 </form>
             </div>
             <br/>
-            <input type="submit" value="Add Member" class="btn btn-success" onclick="toggleAddFixture()"/>
-            <div id="newFixtureForm" style="display: none; margin-top: 30px;">
-                <form method="POST">
-                    {% csrf_token %}
-                    <h4>Create new Fixture</h4>
-                    {{ form.as_p }}
-                    <input type="submit" />
-                </form>
-            </div>
+            <a href="/app/team/newFixture/{{team.id}}"><input type="submit" value="New Fixture" class="btn btn-success" style="margin-top: 20px;" /></a>
         {% endif %}
+
+        <div style="margin-top: 30px;">
+            <h4>Upcoming fixtures:</h4>
+            {% if fixtures != None %}
+                {% for fixture in fixtures %}
+                    <li>{{fixture.name}} - {{fixture.date}}</li>
+                {% endfor %}
+            {% endif %}
+        </div>
 
         <div style="margin-top: 30px;">
             <h4>Members:</h4>

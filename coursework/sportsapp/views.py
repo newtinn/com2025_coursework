@@ -13,7 +13,17 @@ def userHome(request):
         # getting the teams that the user is a part of
         teams = Member.objects.filter(userID=request.user).all()
 
-        return render(request, "userHome.html", {"teams": teams})
+        # getting the fixtures for the user
+        fixtures = []
+
+        for team in teams:
+            teamFixtures = Fixture.objects.filter(teamID=team.teamID).all()
+            for fixture in teamFixtures:
+                fixtures.append(fixture)
+
+        fixtures.sort(key = lambda x: x.date)
+
+        return render(request, "userHome.html", {"teams": teams, "fixtures": fixtures})
     else:
         return HttpResponseRedirect('/')
 
@@ -36,6 +46,10 @@ def teamPage(request, team):
         if (members):
             context["members"] = members
 
+        # showing fixtures
+        fixtures = Fixture.objects.filter(teamID=currentTeam).all().order_by('date')
+        if (fixtures):
+            context["fixtures"] = fixtures
         
         # checking if the user is an admin
         if (request.user.is_authenticated):
@@ -103,6 +117,7 @@ def fixtureCreate(request, team):
     if (currentMember.teamAdmin == True):
         if (request.method == 'POST'):
             currentTeam = Team.objects.filter(id=team).first()
+            teamID = str(currentTeam.id)
 
             form = FixtureCreationForm(request.POST)
 
@@ -111,11 +126,13 @@ def fixtureCreate(request, team):
                 data = form.cleaned_data
                 fixture = Fixture(name=data['name'], date=data['date'], description=data['description'], location=data['location'], teamID=currentTeam)
                 fixture.save()
-                teamID = str(Team.objects.latest('id'))
 
-                return HttpResponseRedirect('team/'+teamID)
+                return HttpResponseRedirect('/app/team/'+teamID)
             else:
-                return HttpResponseRedirect('/team/newFixture/'+teamID)
+                # return message
+                print(form.errors)
+
+                return HttpResponseRedirect('/app/team/newFixture/'+teamID)
         else:
             form = FixtureCreationForm()
             context = {'form': form}
