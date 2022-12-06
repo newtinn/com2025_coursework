@@ -1,11 +1,22 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 
-from .forms import TeamCreationForm, FixtureCreationForm
+from .forms import TeamCreationForm, FixtureCreationForm, RegisterForm
 
 from .models import Team, Member, Fixture, Avaliability
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+
+def register(response):
+    if (response.method == "POST"):
+        form = RegisterForm(response.POST)
+        if (form.is_valid()):
+            form.save()
+            return HttpResponseRedirect('/accounts/login')
+    else:
+        form = RegisterForm()
+    
+    return render(response, "registration/register.html", {"form": form})
 
 @login_required(login_url='/accounts/login/')
 def userHome(request):
