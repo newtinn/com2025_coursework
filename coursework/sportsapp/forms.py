@@ -19,5 +19,5 @@ class TeamCreationForm(ModelForm):
 
 class FixtureCreationForm(ModelForm):
     class Meta:
-        model =Fixture
+        model = Fixture
         fields = ["name", "date", "description", "location"]

@@ -17,8 +17,8 @@
                 <form method="POST">
                     {% csrf_token %}
                     <h4>Add Member</h4>
-                    Username: <input type="text" name="username" /><br/>
-                    Admin: <input type="checkbox" name="admin" /><br/>
+                    Username: <input type="text" name="username" required/><br/>
+                    Admin: <input type="checkbox" name="admin" required/><br/>
                     <input type="submit" />
                 </form>
             </div>

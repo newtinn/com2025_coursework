@@ -110,9 +110,12 @@ def teamCreate(request):
             team.save()
             teamID = str(Team.objects.latest('id'))
 
-            member = Member(userID=request.user.id, teamID=teamID, teamAdmin=True)
+            user = User.objects.get(id=request.user.id)
 
-            return HttpResponseRedirect('team/'+teamID)
+            member = Member(userID=request.user, teamID=team, teamAdmin=True)
+            member.save()
+
+            return HttpResponseRedirect('/app/team/'+str(team.id))
         else:
             return HttpResponseRedirect('/team/create')
     else:

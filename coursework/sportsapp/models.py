@@ -15,7 +15,7 @@ class Member(models.Model):
 class Fixture(models.Model):
     name = models.CharField(max_length=100)
     date = models.DateTimeField()
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True)
     location = models.CharField(max_length=255)
     teamID = models.ForeignKey(Team, on_delete=models.CASCADE)
 
