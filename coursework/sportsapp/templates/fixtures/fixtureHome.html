@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-left: 20px;">
+    {% if fixture %}
+        <h4>Fixture</h4>
+        <h1>{{fixture.name}}</h1>
+        <p>
+            {{fixture.description}}<br/>
+            Date: {{fixture.date}}<br/>
+            Location: {{fixture.location}}<br/>
+        </p>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Avaliable" class="btn btn-success" name="avaliable" />
+            <input type="submit" value="Unavaliable" class="btn btn-danger" name="unavaliable" />
+        </form>
+        <br/>
+
+        <!-- Displaying the people avaliable -->
+        <h4>Avaliable Players: </h4>
+        <p>
+            {% if avaliable %}
+                {% for user in avaliable %}
+                    <ul>{{user.username}}</ul>
+                {% endfor %}
+            {% endif %}
+        </p>
+        <h4>Unavaliable Players: </h4>
+        <p>
+            {% if unavaliable %}
+                {% for user in unavaliable %}
+                    <ul>{{user.username}}</ul>
+                {% endfor %}
+            {% endif %}
+        </p>
+    {% else %}
+        <h1>Fixture not found</h1>
+    {% endif %}
+</div>
+{% endblock content %}

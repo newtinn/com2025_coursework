@@ -14,7 +14,7 @@
 
         <h4 style="margin-top: 50px;">Upcoming fixtures</h4>
         {% for fixture in fixtures %}
-            <li><a href="/app/fixture/{{currentFixture.id}}">{{fixture.name}} - {{fixture.date}}</a></li>
+            <li><a href="/app/fixture/{{fixture.id}}">{{fixture.name}} - {{fixture.date}}</a></li>
         {% endfor %}
 
     {% else %}

@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 
 from .forms import TeamCreationForm, FixtureCreationForm
 
-from .models import Team, Member, Fixture
+from .models import Team, Member, Fixture, Avaliability
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
@@ -139,3 +139,58 @@ def fixtureCreate(request, team):
             return render(request, "fixtures/fixtureCreation.html", context)
     else:
         return HttpResponseRedirect('/')
+
+@login_required(login_url='/accounts/login/')
+def fixtureHome(request, fixture):
+    context = {}
+    
+    currentFixture = Fixture.objects.filter(id=fixture).first()
+    if (currentFixture):
+        context["fixture"] = currentFixture
+
+        # getting the people that are avaliable
+        usersAvaliableList = []
+        usersAvaliable = Avaliability.objects.filter(fixtureID=currentFixture, avaliable=True).all()
+        if (usersAvaliable):
+            for user in usersAvaliable:
+                currentUser = User.objects.filter(id=user.userID.id).first()
+                usersAvaliableList.append(currentUser)
+            
+            context["avaliable"] = usersAvaliableList
+
+        usersUnavaliableList = []
+        usersUnavaliable = Avaliability.objects.filter(fixtureID=currentFixture, avaliable=False).all()
+        if (usersUnavaliable):
+            for user in usersUnavaliable:
+                currentUser = User.objects.filter(id=user.userID.id).first()
+                usersUnavaliableList.append(currentUser)
+            
+            context["unavaliable"] = usersUnavaliableList
+
+        if (request.method == "POST"):
+            user = User.objects.filter(id=request.user.id).first()
+
+            checkAvaliability = Avaliability.objects.filter(userID=request.user, fixtureID=currentFixture).first()
+
+            if (request.POST.get("avaliable")):
+                # checking if the user has already voted
+                if (checkAvaliability):
+                    checkAvaliability.avaliable = True
+                    checkAvaliability.save()
+                else:
+                    avaliability = Avaliability(userID=request.user, fixtureID=currentFixture, avaliable=True)
+                    avaliability.save()
+            
+            if (request.POST.get("unavaliable")):
+                if (checkAvaliability):
+                    checkAvaliability.avaliable = False
+                    checkAvaliability.save()
+                else:
+                    avaliable = Avaliability(userID=request.user, fixtureID=currentFixture, avaliable=False)
+                    avaliable.save()
+
+            return HttpResponseRedirect('/app/fixture/'+str(fixture))
+    else:
+        context["error"] = True
+
+    return render(request, "fixtures/fixtureHome.html", context)
