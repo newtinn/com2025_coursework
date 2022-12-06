@@ -11,23 +11,20 @@ def home(request):
 
 def contact(request):
     if request.method == "GET":
-        form = ContactForm() 
-    else: 
-        form = ContactForm(request.POST) 
-        if form.is_valid(): 
+        form = ContactForm()
+    else:
+        form = ContactForm(request.POST)
+        if form.is_valid():
             name = form.cleaned_data['name'] 
             subject = form.cleaned_data['subject'] 
             email = form.cleaned_data['email'] 
             message = name + ':\n' + form.cleaned_data['message'] 
-            try: 
-                send_mail(subject, message, email, ['myemail@mydomain.com'])
-            except BadHeaderError: 
+            try:
+                send_mail(subject, message, email, ["admin@example.com"])
+            except BadHeaderError:
                 messages.add_message(request, messages.ERROR, 'Message Not Sent') 
-                return HttpResponse("Invalid header found.") 
-
-            messages.add_message(request, messages.SUCCESS, 'Message Sent')
+                return HttpResponseRedirect("contact") 
             return redirect(reverse('home'))
         else:
-            messages.add_message(request, messages.ERROR, 'Invalid Form Data; Message Not Sent') 
-        
-    return render(request, 'contact.html', {"form": form}) 
+            messages.add_message(request, messages.ERROR, 'Invalid Form Data; Message Not Sent')
+    return render(request, "contact.html", {"form": form})    
