@@ -7,5 +7,7 @@ urlpatterns = [
     path('team/create', views.teamCreate, name='teamCreate'),
     path('team/newFixture/<int:team>', views.fixtureCreate, name='fixtureCreate'),
     path('fixture/<int:fixture>', views.fixtureHome, name='fixtureHome'),
-    path('register/', views.register, name='register')
+    path('register/', views.register, name='register'),
+    path('delete/team/<int:team>', views.teamDelete, name='deleteTeam'),
+    path('delete/fixture/<int:fixture>', views.fixtureDelete, name='deleteFixture')
 ]

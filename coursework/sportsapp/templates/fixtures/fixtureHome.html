@@ -5,6 +5,9 @@
     {% if fixture %}
         <h4>Fixture</h4>
         <h1>{{fixture.name}}</h1>
+        {% if user.is_authenticated and admin == True %}
+            <a href="/app/delete/fixture/{{fixture.id}}"><input type="submit" value="Delete Fixture" class="btn btn-danger" /></a><br/>
+        {% endif %}
         <p>
             {{fixture.description}}<br/>
             Date: {{fixture.date}}<br/>

@@ -121,6 +121,17 @@ def teamCreate(request):
         return render(request, "team/teamCreation.html", context)
 
 @login_required(login_url='/accounts/login/')
+def teamDelete(request, team):
+    # checking if the user is an admin
+    user = Member.objects.filter(userID=request.user).first()
+    if (user):
+        if (user.teamAdmin == True):
+            team = Team.objects.get(id=team)
+            team.delete()
+    
+    return HttpResponseRedirect('/app/home')
+
+@login_required(login_url='/accounts/login/')
 def fixtureCreate(request, team):
     # checking if the user is an admin
     currentMember = Member.objects.filter(userID=request.user).first()
@@ -155,6 +166,12 @@ def fixtureCreate(request, team):
 def fixtureHome(request, fixture):
     context = {}
     
+    # checking if user is an admin
+    currentMember = Member.objects.filter(userID=request.user).first()
+
+    if (currentMember.teamAdmin == True):
+        context["admin"] = True
+
     currentFixture = Fixture.objects.filter(id=fixture).first()
     if (currentFixture):
         context["fixture"] = currentFixture
@@ -205,3 +222,14 @@ def fixtureHome(request, fixture):
         context["error"] = True
 
     return render(request, "fixtures/fixtureHome.html", context)
+
+@login_required(login_url='/accounts/login/')
+def fixtureDelete(request, fixture):
+    # checking if the user is an admin
+    user = Member.objects.filter(userID=request.user).first()
+    if (user):
+        if (user.teamAdmin == True):
+            currentFixture = Fixture.objects.get(id=fixture)
+            currentFixture.delete()
+    
+    return HttpResponseRedirect('/app/home')
