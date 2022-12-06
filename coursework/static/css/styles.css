@@ -1,0 +1,35 @@
+.content {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+body {
+    background-color: #0D1B2A;
+    color: white;
+}
+
+.listButton:link {
+    color: white;
+}
+  
+/* mouse over link */
+.listButton:hover {
+color: hotpink;
+}
+
+/* selected link */
+.listButton:active {
+color: white;
+}
+
+.listButton {
+    color: white;
+    text-decoration: none;
+    padding: 2px;
+    border-color: white;
+    border-style: solid;
+}
+
+.error {
+    background-color: #FF5A5F;
+}

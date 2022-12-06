@@ -25,7 +25,7 @@
         <p>
             {% if avaliable %}
                 {% for user in avaliable %}
-                    <ul>{{user.username}}</ul>
+                    <li>{{user.username}}</li>
                 {% endfor %}
             {% endif %}
         </p>
@@ -33,7 +33,7 @@
         <p>
             {% if unavaliable %}
                 {% for user in unavaliable %}
-                    <ul>{{user.username}}</ul>
+                    <li>{{user.username}}</li>
                 {% endfor %}
             {% endif %}
         </p>

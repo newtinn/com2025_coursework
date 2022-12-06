@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="margin-left: 20px">
+
     {% if user.is_authenticated %}
         <h1>Welcome {{user.username}}!</h1>
         <a href="{% url 'teamCreate' %}" class="btn btn-primary">Create Team</a>
@@ -9,16 +9,16 @@
         
         <h4 style="margin-top: 50px;">Your teams</h4>
         {% for currentTeam in teams %}
-            <li><a href="/app/team/{{currentTeam.teamID.id}}">{{currentTeam.teamID.name}}</a></li>
+            <li><a href="/app/team/{{currentTeam.teamID.id}}" class="listButton">{{currentTeam.teamID.name}}</a></li>
         {% endfor %}
 
         <h4 style="margin-top: 50px;">Upcoming fixtures</h4>
         {% for fixture in fixtures %}
-            <li><a href="/app/fixture/{{fixture.id}}">{{fixture.name}} - {{fixture.date}}</a></li>
+            <li><a href="/app/fixture/{{fixture.id}}" class="listButton">{{fixture.name}} - {{fixture.date}}</a></li>
         {% endfor %}
 
     {% else %}
         <h1>You are not logged in!</h1>
     {% endif %}
-</div>
+
 {% endblock content %}

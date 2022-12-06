@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div style="margin-left: 20px;">
+
     {% if team != None %}
         <h1>{{team.name}}</h1>
         <p>Team Leader: {{leader.username}}</p>
@@ -30,7 +30,7 @@
             <h4>Upcoming fixtures:</h4>
             {% if fixtures != None %}
                 {% for fixture in fixtures %}
-                    <li><a href="/app/fixture/{{fixture.id}}">{{fixture.name}} - {{fixture.date}}</a></li>
+                    <li><a href="/app/fixture/{{fixture.id}}" class="listButton">{{fixture.name}} - {{fixture.date}}</a></li>
                 {% endfor %}
             {% endif %}
         </div>
@@ -46,5 +46,5 @@
     {% else %}
         <h1>Team does not exist</h1>
     {% endif %}
-</div>
+
 {% endblock content %}

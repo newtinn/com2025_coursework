@@ -7,16 +7,20 @@ from .models import Team, Member, Fixture, Avaliability
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
-def register(response):
-    if (response.method == "POST"):
-        form = RegisterForm(response.POST)
+from django.contrib import messages
+
+def register(request):
+    if (request.method == "POST"):
+        form = RegisterForm(request.POST)
         if (form.is_valid()):
             form.save()
             return HttpResponseRedirect('/accounts/login')
+        else:
+            messages.add_message(request, messages.ERROR, 'Registration Error') 
     else:
         form = RegisterForm()
     
-    return render(response, "registration/register.html", {"form": form})
+    return render(request, "registration/register.html", {"form": form})
 
 @login_required(login_url='/accounts/login/')
 def userHome(request):
@@ -117,6 +121,7 @@ def teamCreate(request):
 
             return HttpResponseRedirect('/app/team/'+str(team.id))
         else:
+            messages.add_message(request, messages.ERROR, 'Team Creation Error') 
             return HttpResponseRedirect('/team/create')
     else:
         form = TeamCreationForm()
@@ -154,8 +159,7 @@ def fixtureCreate(request, team):
 
                 return HttpResponseRedirect('/app/team/'+teamID)
             else:
-                # return message
-                print(form.errors)
+                messages.add_message(request, messages.ERROR, 'Error in your fixture creation') 
 
                 return HttpResponseRedirect('/app/team/newFixture/'+teamID)
         else:
